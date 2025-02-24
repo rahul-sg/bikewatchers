@@ -6,11 +6,104 @@ html, body {
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center;     /* Center vertically */
-}
-     
-#map {
+  }
+  
+  #map {
     width: 100%;    /* Adjust width to your desired size */
     height: 100%;   /* Adjust height to your desired size */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for effect */
     border-radius: 8px; /* Optional: rounded corners */
+  }
+  
+  #map svg {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* lets you still pan/zoom the map */
+  }
+  
+  circle {
+    pointer-events: auto;
+  }
+  
+  /* STEP 5: slider and label styling */
+  .time-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 1em;
+  }
+  
+  #time-slider {
+    width: 200px;
+  }
+  
+  /* STEP 6: Shared color logic for circles + legend swatches */
+  circle,
+  .legend > div {
+    /* 6.1) These are the three base color variables: */
+    --color-departures: steelblue;
+    --color-arrivals: darkorange;
+  
+    /* 6.1) We compute a final color by mixing them
+       in "oklch" color space, proportionally to
+       var(--departure-ratio). */
+    --color: color-mix(
+      in oklch,
+      var(--color-departures) calc(100% * var(--departure-ratio)),
+      var(--color-arrivals)
+    );
+  
+    fill: var(--color);
+  }
+  
+  /* Basic styling for the legend container */
+  .legend {
+    display: flex;
+    gap: 2px; /* minimal gap so color blocks don't touch */
+    margin-block: 1em;
+    font: 0.9em/1.3 system-ui, sans-serif;
+  }
+  
+  /* Each legend swatch: equally sized blocks with text. */
+  .legend > div {
+    text-align: center;
+    padding: 0.5em 1em; /* bigger horizontal padding than vertical */
+    color: white;       /* white text for contrast on both steelblue + darkorange */
+    font-weight: bold;
+  }
+  
+  .legend-label {
+  font-weight: bold;
+  margin-right: 0.5em;
 }
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+  
+    /* Use the same color variables as circles, so we can re-use the color mixing logic. */
+    --color-departures: steelblue;
+    --color-arrivals: darkorange;
+  
+    /* Switch to 'srgb' instead of 'oklch' for broader browser support */
+    --color: color-mix(
+      in srgb,
+      var(--color-departures) calc(100% * var(--departure-ratio)),
+      var(--color-arrivals)
+    );
+  }
+
+  .legend-item > span {
+    color: black
+  }
+  .legend-item::before {
+    content: "";
+    display: inline-block;
+    width: 1em;  /* swatch size */
+    height: 1em;
+    background-color: var(--color);
+    border-radius: 100px; /* optional circle shape */
+  }  
